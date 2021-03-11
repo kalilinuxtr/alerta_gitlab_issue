@@ -55,9 +55,17 @@ class GitlabIssue(PluginBase):
 
         elif action == 'updateIssue':
             if 'issue_iid' in alert.attributes:
-                issue_iid = alert.attributes['issue_iid']
                 body = 'Update: ' + alert.text
-                url = BASE_URL + '/issues/{}/discussions?body={}'.format(issue_iid, body)
-                r = requests.post(url, headers=self.headers)
+                issue_iid = alert.attributes['issue_iid']
+                if self.base_url:
+                    url2 = self.base_url + '/issues/{}/discussions?body={}'.format(issue_iid, body)
+                r = requests.post(url2, headers=self.headers)
+
+        elif action == 'closeIssue':
+            if 'issue_iid' in alert.attributes:
+                issue_iid = alert.attributes['issue_iid']
+                if self.base_url:
+                    url3 = self.base_url + '/issues/{}/notes?body=closed\n/close'.format(issue_iid)
+                r = requests.post(url3, headers=self.headers)
 
         return alert, action, text
